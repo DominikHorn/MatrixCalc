@@ -80,17 +80,23 @@ class Matrix:
 
         return c
 
-    def __pow__(self, value):
-        if value == 0:
+    def __pow__(self, pot):
+        if pot == 0:
             identity = Matrix(self.columnCount(), self.columnCount())
             for i in range(identity.rowCount()):
                 identity[i][i] = 1
 
             return identity
 
+        # Use binary exponentiation to enhance speed
+        bits = ("{0:b}".format(pot))[1:]
         result = self
-        for cnt in range(1, value):
-            result = self * result
+        for bit in bits:
+            if bit == "0":
+                result = result * result
+            else:
+                result = result * result
+                result = result * self
 
         return result
 
