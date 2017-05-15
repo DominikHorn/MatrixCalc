@@ -107,10 +107,9 @@ class Matrix:
         if isinstance(value, Iterable):
             if not len(value) == self.columnCount():
                 raise ValueError("Can not change matrix length")
-
             value = [Decimal(v) for v in value]
         else:
-            value = [Decimal(value) for i in range(self.rowCount())]
+            value = [Decimal(value) for i in range(self.columnCount())]
 
         self._data[indices] = value
 
