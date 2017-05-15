@@ -104,12 +104,13 @@ class Matrix:
         return self._data[indices]
 
     def __setitem__(self, indices, value):
-        if not isinstance(value, Iterable):
-            value = [Decimal(value) for i in range(self.rowCount())]
-        else:
-            if not len(value) == self.rowCount():
-                raise ValueError("can not change matrix length")
+        if isinstance(value, Iterable):
+            if not len(value) == self.columnCount():
+                raise ValueError("Can not change matrix length")
+
             value = [Decimal(v) for v in value]
+        else:
+            value = [Decimal(value) for i in range(self.rowCount())]
 
         self._data[indices] = value
 
