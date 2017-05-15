@@ -107,6 +107,23 @@ class Matrix:
 
         self._data[indices] = value
 
+    def __eq__(self, other):
+        if other.rowCount() != self.rowCount() or other.columnCount() != self.columnCount():
+            return False
+
+        for i in range(self.rowCount()):
+            for j in range(self.columnCount()):
+                if other[i][j] != self[i][j]:
+                    return False
+
+        return True
+
+    def __ne__(self, other):
+        return not (other == self)
+
+    def isSymmetrical(self):
+        return self.transpose() == self
+
     def rowAt(self, index):
         return self[index]
 
