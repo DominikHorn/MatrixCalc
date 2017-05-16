@@ -134,11 +134,7 @@ class Matrix:
         return self[index]
 
     def columnAt(self, index):
-        column = []
-        for i in range(self.rowCount()):
-            column.append(self[i][index])
-
-        return column
+        return Matrix.MVector([row[index] for row in self])
 
     def transpose(self):
         transposed = Matrix(self.rowCount(), self.columnCount())
