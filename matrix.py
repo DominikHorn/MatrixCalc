@@ -58,6 +58,9 @@ class Matrix:
 
         return string
 
+    def __repr__(self):
+        return self.__str__()
+
     '''
     Returns a new matrix C.
     self * other = C
