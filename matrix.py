@@ -1,5 +1,6 @@
 from decimal import *
 from collections import Iterable
+import copy
 
 '''
 Matrix class can be used to do matrix operations
@@ -131,7 +132,7 @@ class Matrix:
         return not (other == self)
 
     def isSymmetrical(self):
-        return self.transpose() == self
+        return self.getTransposed() == self
 
     def rowAt(self, index):
         return self[index]
@@ -139,13 +140,63 @@ class Matrix:
     def columnAt(self, index):
         return Matrix.MVector([row[index] for row in self])
 
-    def transpose(self):
+    def getTransposed(self):
         transposed = Matrix(self.rowCount(), self.columnCount())
         for i in range(self.rowCount()):
             for j in range(self.columnCount()):
                 transposed[j][i] = self[i][j]
 
         return transposed
+
+    '''
+    Calculates and returns the L/R components so that L * R = A
+    @return c: combined L/R
+    @return l: l Matrix
+    @return r: r Matrix
+    '''
+    def getLR(self):
+        t = self.getCopy()
+        t.__lr()
+        l = Matrix(self.rowCount(), self.columnCount())
+        r = Matrix(self.rowCount(), self.columnCount())
+        for i in range(self.rowCount()):
+            for j in range(i):
+                l[i][j] = t[i][j]
+                r[i][j] = 0
+            l[i][i] = 1
+            r[i][i] = t[i][i]
+            for j in range(i+1,self.columnCount()):
+                l[i][j] = 0
+                r[i][j] = t[i][j]
+
+        return (t, l, r)
+
+    '''
+    Mutating method for retrieving LR
+    '''
+    def __lr(self):
+        if self.rowCount() == self.columnCount() and self.rowCount() <= 1:
+            return
+
+        for i in range(1,self.rowCount()):
+            self[i][0] /= self[0][0]
+
+        astar = Matrix(self.rowCount() - 1, self.columnCount() - 1)
+        for row in range(self.rowCount() - 1):
+            shorterRow = self.rowAt(row+1)[1:]
+            for column in range(len(shorterRow)):
+                astar[row][column] = self[row+1][column+1] - self[row+1][0] * self[0][column+1]
+        astar.__lr()
+
+        for i in range(1, self.rowCount()):
+            for j in range(1, self.columnCount()):
+                self[i][j] = astar[i-1][j-1]
+
+    '''
+    Returns a deep copy of this object
+    '''
+    def getCopy(self):
+        return copy.deepcopy(self)
 
     def rowCount(self):
         return len(self._data)
