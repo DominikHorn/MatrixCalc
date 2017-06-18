@@ -178,20 +178,14 @@ class Matrix:
         if self.rowCount() == self.columnCount() and self.rowCount() <= 1:
             return
 
-        for i in range(1,self.rowCount()):
-            self[i][0] /= self[0][0]
+        for o in range(0, self.rowCount()-1):
+            for row in range(o+1, self.rowCount()):
+                # Calculate v / alpha
+                self[row][o] = self[row][o] / self[o][o]
 
-        astar = Matrix(self.rowCount() - 1, self.columnCount() - 1)
-        for row in range(self.rowCount() - 1):
-            shorterRow = self.rowAt(row+1)[1:]
-            for column in range(len(shorterRow)):
-                astar[row][column] = self[row+1][column+1] - self[row+1][0] * self[0][column+1]
-        astar.__lr()
-
-        for i in range(1, self.rowCount()):
-            for j in range(1, self.columnCount()):
-                self[i][j] = astar[i-1][j-1]
-
+                # Calculate inner matrix thingy
+                for column in range(o+1, self.columnCount()):
+                    self[row][column] = self[row][column] - self[row][o] * self[o][column]
     '''
     Returns a deep copy of this object
     '''
