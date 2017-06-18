@@ -1,11 +1,18 @@
 from decimal import *
 from matrix import Matrix
+import copy
 
-t = Matrix(5,5)
-x = Decimal(1)/Decimal(3)
-t[0] = 0, .5, .5,  0,  0
-t[1] = 1,  0,  0,  0,  0
-t[2] = 0,  x,  0,  x,  x
-t[3] = 0,  0,  0,  0,  1
-t[4] = 0, .5, .5,  0,  0
-print(t**1000)
+t = Matrix(3,3)
+t[0] = 1, 1, 2
+t[1] = 4, 0, 2
+t[2] = 2, 1, 1
+v = Matrix(3, 1)
+v[0] = Decimal(4)/Decimal(3)
+v[1] = 2
+v[2] = - Decimal(2)/Decimal(3)
+
+(c, l,r) = t.getLR()
+print(c)
+print(l)
+print(r)
+print(l*r)
