@@ -67,22 +67,35 @@ class Matrix:
     self * other = C
     '''
     def __mul__(self, other):
-        if self.columnCount() != other.rowCount():
-            raise ValueError("Cannot multiply those matrices since dimensions are incompatible")
+        # Matrix multiplication
+        if isinstance(other, Matrix):
+            if self.columnCount() != other.rowCount():
+                raise ValueError("Cannot multiply those matrices since dimensions are incompatible")
 
-        c = Matrix(self.rowCount(), other.columnCount())
-        for i in range(c.rowCount()):
-            for j in range(c.columnCount()):
-                # Calculate sum from line and column
-                value = 0
-                row = self[i]
-                column = other.columnAt(j)
-                for k in range(len(row)):
-                    value += row[k] * column[k]
+            c = Matrix(self.rowCount(), other.columnCount())
+            for i in range(c.rowCount()):
+                for j in range(c.columnCount()):
+                    # Calculate sum from line and column
+                    value = 0
+                    row = self[i]
+                    column = other.columnAt(j)
+                    for k in range(len(row)):
+                        value += row[k] * column[k]
 
-                c[i][j] = value
+                    c[i][j] = value
 
-        return c
+            return c
+        elif isinstance(other, Matrix.MVector):
+            if self.columnCount() != len(other):
+                raise ValueError("len(vector) must be equal to the length of each row of the matrix")
+
+            data = []
+            for row in range(self.rowCount()):
+                summed = 0
+                for column in range(len(other)):
+                    summed += self[row][column] * other[column]
+                data.append(summed)
+            return Matrix.MVector(data)
 
     def __pow__(self, pot):
         if pot == 0:
@@ -135,7 +148,7 @@ class Matrix:
         return self.getTransposed() == self
 
     def rowAt(self, index):
-        return self[index]
+        return Matrix.MVector(self[index])
 
     def columnAt(self, index):
         return Matrix.MVector([row[index] for row in self])
