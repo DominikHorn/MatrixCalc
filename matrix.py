@@ -125,6 +125,8 @@ class Matrix:
             if not len(value) == self.columnCount():
                 raise ValueError("Can not change matrix length")
             value = [Decimal(v) for v in value]
+        elif isinstance(value, Matrix.MVector):
+            value = [Decimal(value[i]) for i in range(len(value))]
         else:
             value = [Decimal(value) for i in range(self.columnCount())]
 
@@ -169,7 +171,7 @@ class Matrix:
     '''
     def getLR(self):
         t = self.getCopy()
-        t.__lr()
+        p = t.__lr()
         l = Matrix(self.rowCount(), self.columnCount())
         r = Matrix(self.rowCount(), self.columnCount())
         for i in range(self.rowCount()):
@@ -182,16 +184,42 @@ class Matrix:
                 l[i][j] = 0
                 r[i][j] = t[i][j]
 
-        return (t, l, r)
+        return (t, l, r, p)
 
     '''
     Mutating method for retrieving LR
+    @return pivot matrix P
     '''
     def __lr(self):
         if self.rowCount() == self.columnCount() and self.rowCount() <= 1:
             return
 
+        pivot = []
         for o in range(0, self.rowCount()-1):
+            # Create Identity matrix
+            m = Matrix(self.rowCount(), self.columnCount())
+            for i in range(self.rowCount()):
+                m[i][i] = 1
+
+            # Find bigest alpha
+            maxvalue = self[o][o]
+            index = o
+            for row in range(o+1, self.rowCount()):
+                if self[row][o] > maxvalue:
+                    index = row
+                    maxvalue = self[row][o]
+
+            # Swap values around
+            tmp = m[o]
+            m[o] = m[index]
+            m[index] = tmp
+            tmp = self[o]
+            self[o] = self[index]
+            self[index] = tmp
+
+            # Append pivot matrix
+            pivot.append(m)
+
             for row in range(o+1, self.rowCount()):
                 # Calculate v / alpha
                 self[row][o] = self[row][o] / self[o][o]
@@ -199,6 +227,16 @@ class Matrix:
                 # Calculate inner matrix thingy
                 for column in range(o+1, self.columnCount()):
                     self[row][column] = self[row][column] - self[row][o] * self[o][column]
+
+        result = None
+        for elem in reversed(pivot):
+            if not result:
+                result = elem
+            else:
+                result = result * elem
+
+        return result
+
     '''
     Returns a deep copy of this object
     '''
