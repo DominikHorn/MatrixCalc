@@ -6,40 +6,11 @@ import copy
 Matrix class can be used to do matrix operations
 '''
 class Matrix:
-    '''
-    Internal class for representing rows in matrix
-    '''
-    class MVector:
-        def __init__(self, *values):
-            if len(values) == 1 and isinstance(values[0], Iterable):
-                values = values[0]
-            self._data = [Decimal(v) for v in values]
-
-        def __getitem__(self, indices):
-            return self._data[indices]
-
-        def __setitem__(self, indices, values):
-            if isinstance(values, Iterable):
-                self._data[indices] = [Decimal(v) for v in values]
-            else:
-                self._data[indices] = Decimal(values)
-
-        def __str__(self):
-            string = "["
-            for i in range(len(self)-1):
-                string += "{0}, ".format(self[i])
-            string += "{0}]".format(self[len(self)-1])
-
-            return string
-
-        def __len__(self):
-            return len(self._data)
-
     def __init__(self, rows, columns):
         if columns < 1 or rows < 1:
             raise ValueError("Matrix dimensions must be greater than zero")
 
-        self._data = [Matrix.MVector([0 for x in range(columns)]) for y in range(rows)]
+        self._data = [[Decimal(0) for x in range(columns)] for y in range(rows)]
 
     def __str__(self):
         string=""
@@ -85,7 +56,7 @@ class Matrix:
                     c[i][j] = value
 
             return c
-        elif isinstance(other, Matrix.MVector):
+        elif isinstance(other, Iterable):
             if self.columnCount() != len(other):
                 raise ValueError("len(vector) must be equal to the length of each row of the matrix")
 
@@ -95,7 +66,7 @@ class Matrix:
                 for column in range(len(other)):
                     summed += self[row][column] * other[column]
                 data.append(summed)
-            return Matrix.MVector(data)
+            return data
 
     def __pow__(self, pot):
         if pot == 0:
@@ -125,8 +96,6 @@ class Matrix:
             if not len(value) == self.columnCount():
                 raise ValueError("Can not change matrix length")
             value = [Decimal(v) for v in value]
-        elif isinstance(value, Matrix.MVector):
-            value = [Decimal(value[i]) for i in range(len(value))]
         else:
             value = [Decimal(value) for i in range(self.columnCount())]
 
@@ -146,17 +115,18 @@ class Matrix:
     def __ne__(self, other):
         return not (other == self)
 
-    def isSymmetrical(self):
+    def isSymmetric(self):
         return self.getTransposed() == self
 
     def rowAt(self, index):
-        return Matrix.MVector(self[index])
+        return self[index]
 
     def columnAt(self, index):
-        return Matrix.MVector([row[index] for row in self])
+        return [row[index] for row in self]
 
     def getTransposed(self):
-        transposed = Matrix(self.rowCount(), self.columnCount())
+        transposed = Matrix(self.columnCount(), self.rowCount())
+        print(transposed)
         for i in range(self.rowCount()):
             for j in range(self.columnCount()):
                 transposed[j][i] = self[i][j]
