@@ -41,7 +41,12 @@ class Matrix:
         # Matrix multiplication
         if isinstance(other, Matrix):
             if self.columnCount() != other.rowCount():
-                raise ValueError("Cannot multiply those matrices since dimensions are incompatible")
+                if self.rowCount() == self.columnCount() and self.rowCount() == 1:
+                    return other * self[0][0]
+                elif other.rowCount() == other.columnCount() and other.rowCount() == 1:
+                    return self * other[0][0]
+                else:
+                    raise ValueError("Cannot multiply those matrices since dimensions are incompatible")
 
             c = Matrix(self.rowCount(), other.columnCount())
             for i in range(c.rowCount()):
@@ -67,6 +72,19 @@ class Matrix:
                     summed += self[row][column] * other[column]
                 data.append(summed)
             return data
+        else:
+            other = Decimal(other)
+            c = Matrix(self.rowCount(), self.columnCount())
+            for row in range(c.rowCount()):
+                for column in range(c.columnCount()):
+                    c[row][column] = self[row][column] * other
+
+            return c
+
+    def tmp(self):
+        for row in range(self.rowCount()):
+            for column in range(self.columnCount()):
+                print(type(self[row][column]))
 
     def __pow__(self, pot):
         if pot == 0:
@@ -147,11 +165,11 @@ class Matrix:
         for i in range(self.rowCount()):
             for j in range(i):
                 l[i][j] = t[i][j]
-                r[i][j] = 0
-            l[i][i] = 1
+                r[i][j] = Decimal(0)
+            l[i][i] = Decimal(1)
             r[i][i] = t[i][i]
             for j in range(i+1,self.columnCount()):
-                l[i][j] = 0
+                l[i][j] = Decimal(0)
                 r[i][j] = t[i][j]
 
         return (t, l, r, p)
