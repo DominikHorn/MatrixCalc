@@ -81,11 +81,6 @@ class Matrix:
 
             return c
 
-    def tmp(self):
-        for row in range(self.rowCount()):
-            for column in range(self.columnCount()):
-                print(type(self[row][column]))
-
     def __pow__(self, pot):
         if pot == 0:
             identity = Matrix(self.columnCount(), self.columnCount())
