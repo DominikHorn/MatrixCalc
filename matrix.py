@@ -139,7 +139,6 @@ class Matrix:
 
     def getTransposed(self):
         transposed = Matrix(self.columnCount(), self.rowCount())
-        print(transposed)
         for i in range(self.rowCount()):
             for j in range(self.columnCount()):
                 transposed[j][i] = self[i][j]
